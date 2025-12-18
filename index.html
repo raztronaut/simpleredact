@@ -14,19 +14,7 @@
   <meta name="theme-color" content="#0c0a09" />
   <link rel="llms" href="/llms.txt" />
 
-  <!-- Analytics -->
-  <script>
-    (function () {
-      const umamiId = "%VITE_UMAMI_WEBSITE_ID%";
-      if (umamiId && umamiId.startsWith("htt") === false) { // Basic check to ensure it's not the raw variable name if replacement fails
-        const script = document.createElement('script');
-        script.defer = true;
-        script.src = "/stats/script.js";
-        script.setAttribute("data-website-id", umamiId);
-        document.head.appendChild(script);
-      }
-    })();
-  </script>
+
 
 
   <!-- Apple Web App -->

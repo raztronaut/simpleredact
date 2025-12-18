@@ -70,17 +70,31 @@ export const EditorScreen = () => {
     return (
         <div className="h-screen w-full flex flex-col bg-stone-950 overflow-hidden relative">
             {/* Top Bar */}
-            <div className="h-16 border-b border-stone-800 flex items-center justify-between px-6 bg-stone-900 z-50">
+            <div className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-stone-950/50 backdrop-blur-xl z-50 sticky top-0">
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={reset} className="text-stone-400 hover:text-white">
+                    <Button
+                        variant="ghost"
+                        onClick={reset}
+                        className="text-stone-400 hover:text-white hover:bg-white/5 h-9 px-3 rounded-xl transition-all"
+                    >
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Back
                     </Button>
-                    <div className="w-px h-6 bg-stone-800 mx-2" />
+                    <div className="w-px h-4 bg-white/10 mx-2" />
                     <InstructionsDialog />
                 </div>
 
-                <Button onClick={handleDownload} className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold rounded-full px-6">
+                {/* Center Title for balance */}
+                <div className="absolute left-1/2 -translate-x-1/2 hidden md:block">
+                    <span className="text-white/20 font-sans font-bold text-xs tracking-[0.3em] uppercase pointer-events-none transition-opacity hover:opacity-40">
+                        SimpleRedact
+                    </span>
+                </div>
+
+                <Button
+                    onClick={handleDownload}
+                    className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold rounded-2xl px-6 h-10 transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] active:scale-95"
+                >
                     <Download className="w-4 h-4 mr-2" />
                     Download
                 </Button>

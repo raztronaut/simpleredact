@@ -14,7 +14,6 @@ import {
 export const AutoDetectButton = () => {
     const [status, setStatus] = useState<'idle' | 'loading' | 'processing' | 'warning'>('idle')
     const [progress, setProgress] = useState(0)
-    const [progressText, setProgressText] = useState('')
 
     const image = useStore(state => state.image)
     const setPreviewBoxes = useStore(state => state.setPreviewBoxes)
@@ -33,9 +32,8 @@ export const AutoDetectButton = () => {
 
         try {
             // 1. Load Model (downloads if needed)
-            await aiService.loadModel((p, text) => {
+            await aiService.loadModel((p) => {
                 setProgress(Math.round(p))
-                setProgressText(text)
             })
 
             // 2. Process Image
@@ -75,7 +73,6 @@ export const AutoDetectButton = () => {
         } finally {
             setStatus('idle')
             setProgress(0)
-            setProgressText('')
         }
     }
 
@@ -95,17 +92,38 @@ export const AutoDetectButton = () => {
                             {isMobile && <span className="ml-1 text-[10px] opacity-50 font-normal">(Beta)</span>}
                         </Button>
                     ) : status === 'loading' ? (
-                        <Button disabled variant="secondary" className="h-10 min-w-[200px] justify-start px-4 bg-stone-800 text-stone-400 relative overflow-hidden ring-1 ring-stone-700">
-                            <div className="absolute left-0 top-0 bottom-0 bg-emerald-500/10 transition-all duration-300" style={{ width: `${progress}%` }} />
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0 text-emerald-500" />
-                            <span className="truncate text-xs">
-                                {progress > 0 ? (progressText || `Loading AI ${progress}%`) : "Initializing AI..."}
-                            </span>
+                        <Button disabled variant="secondary" className="h-10 w-[240px] justify-start px-4 bg-stone-800 text-stone-300 relative overflow-hidden ring-1 ring-emerald-500/20">
+                            {/* Animated shimmering background */}
+                            <div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"
+                                style={{
+                                    backgroundImage: 'linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.1) 50%, transparent 100%)',
+                                    backgroundSize: '200% 100%'
+                                }}
+                            />
+
+                            {/* Static progress bar at bottom */}
+                            <div
+                                className="absolute bottom-0 left-0 h-[2px] bg-emerald-500 transition-all duration-500 ease-out shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                                style={{ width: `${progress}%` }}
+                            />
+
+                            <div className="relative z-10 flex items-center w-full">
+                                <Loader2 className="w-4 h-4 mr-3 animate-spin shrink-0 text-emerald-500" />
+                                <div className="flex flex-col items-start leading-none gap-1">
+                                    <span className="text-[11px] font-bold tracking-wider uppercase text-emerald-400/80">
+                                        Initializing AI
+                                    </span>
+                                    <span className="text-[10px] text-stone-400 font-medium whitespace-nowrap">
+                                        Detecting faces & sensitive text...
+                                    </span>
+                                </div>
+                            </div>
                         </Button>
                     ) : (
-                        <Button disabled variant="secondary" className="h-10 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-4 ring-1 ring-emerald-500/30">
+                        <Button disabled variant="secondary" className="h-10 w-[240px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-4 ring-1 ring-emerald-500/30">
                             <ScanEye className="w-4 h-4 mr-2 animate-pulse" />
-                            Scanning Image...
+                            Scanning Content...
                         </Button>
                     )}
 

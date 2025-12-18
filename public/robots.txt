@@ -21,5 +21,3 @@ User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://simpleredact.vercel.app/sitemap.xml
-# LLM friendly project overview
-Link: https://simpleredact.vercel.app/llms.txt; rel="llms"

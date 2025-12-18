@@ -31,7 +31,7 @@ A simple, secure, and privacy-focused image redaction tool. Featuring local, bro
 ## Known Issues
 
 > [!WARNING]
-> **AI Model Performance**: Local AI detection is in beta. It requires a compatible browser (Chrome/Edge with WebGPU recommended) and may be slow on legacy hardware. Initial model load (approx. 40MB) happens once and is cached.
+> **AI Model Performance**: Local AI detection is in beta and still kinda poop tbh. It requires a compatible browser (Chrome/Edge with WebGPU recommended) and may be slow on legacy hardware. Initial model load (approx. 40MB) happens once and is cached.
 
 ## Tech Stack
 

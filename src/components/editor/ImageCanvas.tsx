@@ -10,6 +10,7 @@ export const ImageCanvas = () => {
     const boxes = useStore(state => state.boxes)
     const selectedBoxId = useStore(state => state.selectedBoxId)
     const zoom = useStore(state => state.zoom)
+    const previewBoxes = useStore(state => state.previewBoxes)
 
     const selectBox = useStore(state => state.selectBox)
     const addBox = useStore(state => state.addBox)
@@ -130,6 +131,20 @@ export const ImageCanvas = () => {
                             box={box}
                             zoom={zoom}
                             isSelected={selectedBoxId === box.id}
+                        />
+                    ))}
+
+                    {/* Preview Boxes (Dashed/Ghost) */}
+                    {previewBoxes.map(box => (
+                        <div
+                            key={box.id}
+                            className="absolute border-2 border-dashed border-emerald-400 bg-emerald-500/10 pointer-events-none"
+                            style={{
+                                left: box.x,
+                                top: box.y,
+                                width: box.width,
+                                height: box.height,
+                            }}
                         />
                     ))}
 

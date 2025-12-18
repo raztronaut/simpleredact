@@ -8,6 +8,7 @@ export interface Box {
     y: number
     width: number
     height: number
+    category?: string
 }
 
 interface RedactState {
@@ -38,6 +39,12 @@ interface RedactState {
     undo: () => void
     redo: () => void
     reset: () => void
+
+    // Preview state for AI detection review
+    previewBoxes: Box[]
+    setPreviewBoxes: (boxes: Box[]) => void
+    clearPreviewBoxes: () => void
+    commitPreviewBoxes: () => void
 }
 
 export const useStore = create<RedactState>((set, get) => ({
@@ -160,10 +167,33 @@ export const useStore = create<RedactState>((set, get) => ({
         }
     },
 
+    previewBoxes: [],
+    setPreviewBoxes: (boxes) => set({ previewBoxes: boxes }),
+    clearPreviewBoxes: () => set({ previewBoxes: [] }),
+    commitPreviewBoxes: () => {
+        const { previewBoxes, boxes, history, historyIndex } = get()
+        if (previewBoxes.length === 0) return
+
+        // Create new boxes with fresh IDs (if needed, but they should already have UUIDs from AI service usually, or we assign them here)
+        // However, if we trust the source to provide IDs or we re-assign:
+        const newCommittedBoxes = previewBoxes.map(b => ({ ...b, id: b.id || uuidv4() }))
+
+        const newBoxes = [...boxes, ...newCommittedBoxes]
+        const newHistory = history.slice(0, historyIndex + 1)
+
+        set({
+            boxes: newBoxes,
+            previewBoxes: [], // clear previews after commit
+            history: [...newHistory, newBoxes],
+            historyIndex: historyIndex + 1
+        })
+    },
+
     reset: () => set({
         image: null,
         pixelatedImage: null,
         boxes: [],
+        previewBoxes: [], // Clear previews on reset
         history: [[]],
         historyIndex: 0
     })

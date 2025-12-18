@@ -1,8 +1,10 @@
-# RedactSimple
+A simple, secure, and privacy-focused image redaction tool. Featuring local, browser-based AI text detection powered by **Florence-2** via WebGPU. All processing stays on your device.
 
-A simple, secure, and privacy-focused image redaction tool built with React, Vite, and Shadcn UI.
+## The Interface
+![RedactSimple UI](./public/ui.jpeg)
 
-![RedactSimple Preview](./public/screenshot.jpeg)
+## The Results
+![RedactSimple Result](./public/result.png)
 
 ## Features
 
@@ -13,6 +15,11 @@ A simple, secure, and privacy-focused image redaction tool built with React, Vit
     -   Draw boxes to redact.
     -   Move and resize boxes easily.
     -   Download high-quality PNGs.
+-   **Smart Auto-Redaction (Beta)**:
+    -   Powered by **Florence-2** running locally in your browser (via WebGPU).
+    -   Automatically detects **Emails**, **Phone Numbers**, **Credit Cards**, **Names**, **Addresses**, and **Prices**.
+    -   **Context Aware**: Uses spatial analysis to understand document layout (e.g., finding the name next to "Customer:").
+    -   **Review Sidebar**: Review and modify detected redactions before applying them.
 -   **Keyboard Accessibility**:
     -   `Arrow Keys`: Move selected box (1px).
     -   `Shift + Arrow Keys`: Move selected box (10px).
@@ -20,6 +27,11 @@ A simple, secure, and privacy-focused image redaction tool built with React, Vit
     -   `Cmd/Ctrl -`: Zoom Out.
     -   `Cmd/Ctrl 0`: Fit to Screen.
     -   `Cmd/Ctrl 1`: Zoom to 100%.
+
+## Known Issues
+
+> [!WARNING]
+> **AI Model Performance**: Local AI detection is in beta. It requires a compatible browser (Chrome/Edge with WebGPU recommended) and may be slow on legacy hardware. Initial model load (approx. 40MB) happens once and is cached.
 
 ## Tech Stack
 

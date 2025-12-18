@@ -3,6 +3,8 @@ import { useStore } from '@/store/useStore'
 import { Button } from '@/components/ui/button'
 import { ImageCanvas } from './ImageCanvas'
 import { Toolbar } from './Toolbar'
+import { DetectionReviewDialog } from './DetectionReviewDialog'
+import { InstructionsDialog } from './InstructionsDialog'
 import { ArrowLeft, Download } from 'lucide-react'
 import { useZoomFit, useKeyboardShortcuts } from '@/hooks/use-editor-logic'
 
@@ -11,6 +13,7 @@ export const EditorScreen = () => {
     const image = useStore(state => state.image)
     const originalWidth = useStore(state => state.originalWidth)
     const originalHeight = useStore(state => state.originalHeight)
+    const previewBoxes = useStore(state => state.previewBoxes)
 
     const containerRef = useRef<HTMLDivElement>(null)
 
@@ -68,10 +71,14 @@ export const EditorScreen = () => {
         <div className="h-screen w-full flex flex-col bg-stone-950 overflow-hidden relative">
             {/* Top Bar */}
             <div className="h-16 border-b border-stone-800 flex items-center justify-between px-6 bg-stone-900 z-50">
-                <Button variant="ghost" onClick={reset} className="text-stone-400 hover:text-white">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" onClick={reset} className="text-stone-400 hover:text-white">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back
+                    </Button>
+                    <div className="w-px h-6 bg-stone-800 mx-2" />
+                    <InstructionsDialog />
+                </div>
 
                 <Button onClick={handleDownload} className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold rounded-full px-6">
                     <Download className="w-4 h-4 mr-2" />
@@ -85,6 +92,7 @@ export const EditorScreen = () => {
             </div>
 
             <Toolbar />
+            {previewBoxes.length > 0 && <DetectionReviewDialog />}
         </div>
     )
 }

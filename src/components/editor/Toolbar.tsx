@@ -9,6 +9,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { AutoDetectButton } from './AutoDetectButton'
 
 export const Toolbar = () => {
     const zoom = useStore(state => state.zoom)
@@ -49,7 +50,7 @@ export const Toolbar = () => {
                 </Button>
             </div>
 
-            <div className="flex items-center gap-1 px-2">
+            <div className="flex items-center gap-1 px-2 border-r border-stone-800">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-10 px-3 rounded-xl hover:bg-stone-800 gap-2 font-medium tabular-nums min-w-[100px]">
@@ -77,6 +78,10 @@ export const Toolbar = () => {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+            </div>
+
+            <div className="flex items-center gap-1 pl-2">
+                <AutoDetectButton />
             </div>
         </div>
     )

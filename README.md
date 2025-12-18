@@ -1,10 +1,10 @@
 A simple, secure, and privacy-focused image redaction tool. Featuring local, browser-based AI text detection powered by **Florence-2** via WebGPU. All processing stays on your device.
 
 ## The Interface
-![RedactSimple UI](./public/ui.jpeg)
+![SimpleRedact UI](./public/ui.jpeg)
 
 ## The Results
-![RedactSimple Result](./public/result.png)
+![SimpleRedact Result](./public/result.png)
 
 ## Features
 

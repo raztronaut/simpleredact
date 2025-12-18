@@ -12,7 +12,7 @@ export const InstructionsDialog = () => {
             </DialogTrigger>
             <DialogContent className="bg-stone-900 text-stone-100 border-stone-800 sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>How to use RedactSimple</DialogTitle>
+                    <DialogTitle>How to use SimpleRedact</DialogTitle>
                     <DialogDescription className="text-stone-400">
                         Securely redact information with these tools.
                     </DialogDescription>

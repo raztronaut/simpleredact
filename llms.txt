@@ -1,9 +1,9 @@
-# RedactSimple
+# SimpleRedact
 
 > Secure, client-side image redaction tool with browser-based AI text detection.
 
 ## Description
-RedactSimple is a privacy-first web application designed to redact sensitive information from images without ever uploading them to a server. It features manual drawing tools and an automated detection system powered by the Florence-2 AI model running locally via WebGPU or WASM.
+SimpleRedact is a privacy-first web application designed to redact sensitive information from images without ever uploading them to a server. It features manual drawing tools and an automated detection system powered by the Florence-2 AI model running locally via WebGPU or WASM.
 
 ## Core Features
 - **Client-Side First**: All processing (redaction, AI detection) happens in the end-user's browser.

@@ -94,7 +94,7 @@ export const ImageCanvas = () => {
 
     return (
         <div
-            className="relative shadow-2xl bg-white"
+            className="relative shadow-2xl bg-white touch-none"
             style={{
                 width: originalWidth * zoom,
                 height: originalHeight * zoom,

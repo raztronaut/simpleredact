@@ -39,17 +39,26 @@ class AIService {
     // Singleton instance
     static instance = new AIService();
 
+    public isMobile() {
+        if (typeof navigator === 'undefined') return false;
+        const ua = navigator.userAgent;
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) || (navigator.maxTouchPoints > 0 && /Macintosh/i.test(ua));
+    }
+
     async loadModel(onProgress?: (progress: number, text: string) => void) {
         if (this.model && this.processor) return;
-        if (this.isLoading) return; // simple lock
+        if (this.isLoading) return;
+
+        const mobile = this.isMobile();
+        if (mobile) {
+            throw new Error("Local AI detection is currently disabled on mobile devices for stability. Please use a desktop browser for this feature.");
+        }
 
         this.isLoading = true;
 
-        // Define callback here so it's available in both try and catch blocks
         const progressCallback = (x: unknown) => {
             const info = x as { status: string, progress?: number, file: string };
             if (onProgress && info.status === 'progress') {
-                // Approximate progress based on multiple file downloads
                 onProgress(info.progress || 0, `Downloading ${info.file}...`);
             } else if (onProgress && info.status === 'initiate') {
                 onProgress(0, `Starting download of ${info.file}...`);
@@ -58,56 +67,76 @@ class AIService {
             }
         };
 
-        try {
-            // Load processor and model in parallel
-            if (onProgress) onProgress(10, 'Initializing AI models...');
+        // Configuration priority
+        const configs: { device: "webgpu" | "wasm", dtype: "fp32" | "fp16" | "q8" | "q4" | "auto" | "int8" | "uint8", label: string }[] = mobile ? [
+            { device: 'webgpu' as const, dtype: 'fp16' as const, label: 'WebGPU (Optimized)' },
+            { device: 'wasm' as const, dtype: 'q4' as const, label: 'CPU (Quantized)' }
+        ] : [
+            { device: 'webgpu' as const, dtype: 'fp32' as const, label: 'WebGPU' },
+            { device: 'wasm' as const, dtype: 'q8' as const, label: 'CPU' }
+        ];
 
-            // transformers.js v3 auto-selects best backend usually.
+        let lastError: unknown = null;
 
-            const [model, processor, tokenizer] = await Promise.all([
-                Florence2ForConditionalGeneration.from_pretrained(MODEL_ID, {
-                    dtype: 'fp32', // fp16 can be unstable on some WebGPU implementations (e.g. macOS), using fp32
-                    device: 'webgpu',
-                    progress_callback: progressCallback,
-                }),
-                AutoProcessor.from_pretrained(MODEL_ID, { progress_callback: progressCallback }),
-                AutoTokenizer.from_pretrained(MODEL_ID, { progress_callback: progressCallback }),
-            ]);
-
-            this.model = model as unknown as Florence2ForConditionalGeneration;
-            this.processor = processor as unknown as AIProcessor;
-            this.tokenizer = tokenizer as unknown as AITokenizer;
-
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            console.error("Failed to load AI model (WebGPU)", error);
-            // Fallback to wasm if webgpu failed
+        for (const config of configs) {
             try {
-                console.log("WebGPU failed, falling back to CPU/WASM...");
                 if (onProgress) {
-                    onProgress(0, `WebGPU error: ${errorMessage}. Falling back to CPU...`);
+                    onProgress(10, `Initializing ${config.label} AI...`);
                 }
+                // No logs here
 
-                const [model, processor, tokenizer] = await Promise.all([
-                    Florence2ForConditionalGeneration.from_pretrained(MODEL_ID, {
-                        dtype: 'q8', // quantized for cpu
-                        device: 'wasm',
-                        progress_callback: progressCallback,
-                    }),
-                    AutoProcessor.from_pretrained(MODEL_ID, { progress_callback: progressCallback }),
-                    AutoTokenizer.from_pretrained(MODEL_ID, { progress_callback: progressCallback }),
-                ]);
+                const loadOptions = {
+                    dtype: config.dtype,
+                    device: config.device,
+                    progress_callback: progressCallback,
+                };
+
+                let model: Florence2ForConditionalGeneration | null = null;
+                let processor: AIProcessor | null = null;
+                let tokenizer: AITokenizer | null = null;
+
+                try {
+                    const [m, p, t] = await Promise.all([
+                        Florence2ForConditionalGeneration.from_pretrained(MODEL_ID, loadOptions),
+                        AutoProcessor.from_pretrained(MODEL_ID, { progress_callback: progressCallback }),
+                        AutoTokenizer.from_pretrained(MODEL_ID, { progress_callback: progressCallback }),
+                    ]);
+                    model = m as Florence2ForConditionalGeneration;
+                    processor = p as unknown as AIProcessor;
+                    tokenizer = t as unknown as AITokenizer;
+                } catch (loadError: unknown) {
+                    // Check for browser cache error
+                    if (loadError instanceof Error && loadError.message.includes('Browser cache is not available') && env.useBrowserCache) {
+                        console.warn("Browser cache not available, retrying without cache...");
+                        env.useBrowserCache = false;
+                        const [m, p, t] = await Promise.all([
+                            Florence2ForConditionalGeneration.from_pretrained(MODEL_ID, loadOptions),
+                            AutoProcessor.from_pretrained(MODEL_ID, { progress_callback: progressCallback }),
+                            AutoTokenizer.from_pretrained(MODEL_ID, { progress_callback: progressCallback }),
+                        ]);
+                        model = m as Florence2ForConditionalGeneration;
+                        processor = p as unknown as AIProcessor;
+                        tokenizer = t as unknown as AITokenizer;
+                    } else {
+                        throw loadError;
+                    }
+                }
 
                 this.model = model as unknown as Florence2ForConditionalGeneration;
                 this.processor = processor as unknown as AIProcessor;
                 this.tokenizer = tokenizer as unknown as AITokenizer;
-            } catch (fallbackError) {
+
                 this.isLoading = false;
-                throw fallbackError;
+                return; // Success!
+            } catch (error) {
+                console.warn(`${config.label} failed:`, error);
+                lastError = error;
+                // Continue to next config
             }
         }
 
         this.isLoading = false;
+        throw lastError || new Error("Failed to load AI model after all attempts");
     }
 
     async detectPII(imageSource: string | Blob): Promise<DetectedBox[]> {

@@ -1,3 +1,5 @@
+# [SimpleRedact](https://github.com/raztronaut/simpleredact)
+
 A simple, secure, and privacy-focused image redaction tool. Featuring local, browser-based AI text detection powered by **Florence-2** via WebGPU. All processing stays on your device.
 
 ## The Interface

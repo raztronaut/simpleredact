@@ -86,8 +86,8 @@ export const EditorScreen = () => {
                 </Button>
             </div>
 
-            {/* Canvas Area - Scrollable */}
-            <div ref={containerRef} className="flex-1 overflow-auto bg-stone-950 p-12 flex items-center justify-center relative">
+            {/* Canvas Area - No Scroll on Mobile */}
+            <div ref={containerRef} className="flex-1 overflow-hidden bg-stone-950 p-4 md:p-12 flex items-center justify-center relative touch-none">
                 <ImageCanvas />
             </div>
 

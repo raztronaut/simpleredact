@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react"
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
+import { useState, useRef } from "react"
+import { motion, useMotionValue, useSpring, useTransform, useAnimationFrame } from "framer-motion"
 
 function RedactionDemo() {
     return (
@@ -9,7 +9,7 @@ function RedactionDemo() {
                     Confidential
                 </span>
                 <motion.div
-                    className="absolute h-[1.1em] top-1/2 -translate-y-1/2 left-0 right-0 bg-foreground rounded-sm shadow-lg"
+                    className="absolute h-[1.1em] top-1/2 -translate-y-1/2 left-0 right-0 bg-foreground rounded-sm shadow-lg will-change-transform"
                     initial={{ scaleX: 0, originX: 0 }}
                     animate={{
                         scaleX: [0, 1, 1, 0],
@@ -18,7 +18,7 @@ function RedactionDemo() {
                         duration: 3,
                         repeat: Infinity,
                         times: [0, 0.3, 0.7, 1],
-                        ease: [0.65, 0, 0.35, 1]
+                        ease: "easeInOut"
                     }}
                 />
             </div>
@@ -27,7 +27,7 @@ function RedactionDemo() {
                     Personal Data
                 </span>
                 <motion.div
-                    className="absolute h-[1.1em] top-1/2 -translate-y-1/2 left-0 right-0 bg-foreground rounded-sm shadow-lg"
+                    className="absolute h-[1.1em] top-1/2 -translate-y-1/2 left-0 right-0 bg-foreground rounded-sm shadow-lg will-change-transform"
                     initial={{ scaleX: 0, originX: 0 }}
                     animate={{
                         scaleX: [0, 0, 1, 1, 0],
@@ -36,7 +36,7 @@ function RedactionDemo() {
                         duration: 3,
                         repeat: Infinity,
                         times: [0, 0.4, 0.6, 0.8, 1],
-                        ease: [0.65, 0, 0.35, 1]
+                        ease: "easeInOut"
                     }}
                 />
             </div>
@@ -51,7 +51,7 @@ function DetectionDemo() {
                 {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="aspect-square bg-foreground/5 rounded-md border border-foreground/10 relative overflow-hidden">
                         <motion.div
-                            className="absolute inset-0 bg-emerald-500/10 border-2 border-emerald-500/50 rounded-md"
+                            className="absolute inset-0 bg-emerald-500/10 border-2 border-emerald-500/50 rounded-md will-change-transform"
                             initial={{ scale: 0.8, opacity: 0 }}
                             animate={{
                                 scale: [0.8, 1.05, 1],
@@ -61,7 +61,8 @@ function DetectionDemo() {
                                 duration: 2,
                                 repeat: Infinity,
                                 delay: i * 0.4,
-                                repeatType: "reverse"
+                                repeatType: "reverse",
+                                ease: "easeInOut"
                             }}
                         />
                     </div>
@@ -69,7 +70,7 @@ function DetectionDemo() {
             </div>
             {/* Scanning Line */}
             <motion.div
-                className="absolute left-6 right-6 h-[2px] bg-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                className="absolute left-6 right-6 h-[2px] bg-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.5)] will-change-[top]"
                 animate={{ top: ["20%", "80%"] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
@@ -79,13 +80,15 @@ function DetectionDemo() {
 
 function PerformanceDemo() {
     const [count, setCount] = useState(0)
+    const lastUpdate = useRef(0)
 
-    useEffect(() => {
-        const interval = setInterval(() => {
+    useAnimationFrame((time) => {
+        // Update roughly every 30ms but synced to frames
+        if (time - lastUpdate.current > 30) {
             setCount((prev) => (prev + 1) % 101)
-        }, 30)
-        return () => clearInterval(interval)
-    }, [])
+            lastUpdate.current = time
+        }
+    })
 
     return (
         <div className="flex flex-col items-center justify-center h-full gap-3 relative">
@@ -110,7 +113,8 @@ function PerformanceDemo() {
                         strokeDasharray="219.91"
                         initial={{ strokeDashoffset: 219.91 }}
                         animate={{ strokeDashoffset: 219.91 - (219.91 * count) / 100 }}
-                        className="text-emerald-500"
+                        transition={{ type: "tween", duration: 0.1 }}
+                        className="text-emerald-500 will-change-[stroke-dashoffset]"
                     />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -185,9 +189,10 @@ export function FeaturesSection() {
             <div className="max-w-6xl mx-auto">
                 <motion.div
                     className="flex flex-col items-center mb-16 space-y-4"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, amount: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                 >
                     <span className="text-emerald-500 text-xs font-bold uppercase tracking-[0.2em]">Technology</span>
                     <h2 className="text-4xl md:text-5xl font-serif text-center">Built for Privacy</h2>

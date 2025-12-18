@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# AI-friendly directives
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://simpleredact.vercel.app/sitemap.xml
+# LLM friendly project overview
+Link: https://simpleredact.vercel.app/llms.txt; rel="llms"

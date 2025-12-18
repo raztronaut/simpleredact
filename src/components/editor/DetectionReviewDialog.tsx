@@ -174,7 +174,7 @@ export const DetectionReviewDialog = () => {
             */}
             <DialogContent
                 hideOverlay
-                className="fixed right-0 left-auto top-16 bottom-0 w-80 h-[calc(100vh-64px)] bg-stone-900 text-stone-100 border-l border-stone-800 shadow-2xl p-0 gap-0 sm:rounded-none translate-x-0 translate-y-0 data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right"
+                className="fixed right-0 left-auto top-16 bottom-0 w-full sm:w-80 h-[calc(100vh-64px)] bg-stone-900 text-stone-100 border-l border-stone-800 shadow-2xl p-0 gap-0 sm:rounded-none translate-x-0 translate-y-0 data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right"
                 onInteractOutside={(e) => {
                     e.preventDefault()
                 }}

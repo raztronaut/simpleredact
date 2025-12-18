@@ -10,7 +10,7 @@ export const InstructionsDialog = () => {
                     <Info className="w-5 h-5" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-stone-900 text-stone-100 border-stone-800 sm:max-w-[425px]">
+            <DialogContent className="bg-stone-900 text-stone-100 border-stone-800 sm:max-w-[425px] w-[calc(100%-2rem)] mx-auto rounded-2xl overflow-y-auto max-h-[90vh]">
                 <DialogHeader>
                     <DialogTitle>How to use SimpleRedact</DialogTitle>
                     <DialogDescription className="text-stone-400">

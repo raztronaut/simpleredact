@@ -1,13 +1,20 @@
 {
-  "name": "SimpleRedact",
+  "name": "simpleredact",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "Razi Syed",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raztronaut/simpleredact"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

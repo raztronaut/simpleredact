@@ -11,7 +11,6 @@ export function AIWidget() {
                 target: container,
                 theme: 'minimal',
                 compact: true,
-                mode: 'content',
                 promptPrefix: 'Summarize this PII redaction tool page:'
             })
         }

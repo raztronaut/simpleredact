@@ -3,6 +3,7 @@ import { Sparkles, Loader2, ScanEye, Monitor } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { aiService } from '@/lib/aiService'
 import { useStore } from '@/store/useStore'
+import { trackEvent } from '@/utils/analytics'
 import {
     Dialog,
     DialogContent,
@@ -21,6 +22,7 @@ export const AutoDetectButton = () => {
 
     const handleAutoDetect = async () => {
         if (!image) return
+        const startTime = Date.now()
 
         // Show warning on mobile before starting
         if (isMobile && status === 'idle') {
@@ -29,6 +31,10 @@ export const AutoDetectButton = () => {
         }
 
         setStatus('loading')
+        trackEvent({
+            name: 'ai_scan_start',
+            props: { is_mobile: isMobile }
+        });
 
         try {
             // 1. Load Model (downloads if needed)
@@ -65,10 +71,21 @@ export const AutoDetectButton = () => {
             })
 
             setPreviewBoxes(newBoxes)
+            trackEvent({
+                name: 'ai_scan_complete',
+                props: {
+                    results_count: newBoxes.length,
+                    duration_ms: Date.now() - startTime
+                }
+            });
 
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : "Unknown error";
             console.error("Auto detect failed:", error)
+            trackEvent({
+                name: 'ai_scan_error',
+                props: { error_type: errorMessage }
+            });
             window.alert("Failed to auto-detect: " + errorMessage)
         } finally {
             setStatus('idle')

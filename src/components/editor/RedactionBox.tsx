@@ -4,6 +4,7 @@ import { useStore } from '@/store/useStore'
 import { cn } from '@/lib/utils'
 import { X, Copy } from 'lucide-react'
 import { EDITOR_CONSTANTS } from '@/lib/constants'
+import { trackEvent } from '@/utils/analytics'
 
 interface RedactionBoxProps {
     box: Box
@@ -230,7 +231,14 @@ export const RedactionBox = ({ box, zoom, isSelected }: RedactionBoxProps) => {
                             </button>
                             <div className="w-px h-4 bg-stone-700 mx-1" />
                             <button
-                                onClick={(e) => { e.stopPropagation(); deleteBox(id) }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteBox(id);
+                                    trackEvent({
+                                        name: 'redaction_delete',
+                                        props: { method: 'toolbar' }
+                                    });
+                                }}
                                 className="p-2 hover:bg-rose-500/20 rounded text-rose-400 hover:text-rose-500 transition-colors"
                                 title="Delete"
                             >

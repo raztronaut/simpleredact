@@ -26,6 +26,7 @@ export const ImageCanvas = () => {
         e.preventDefault()
         selectBox(null) // Deselect
         setIsDrawing(true)
+        e.currentTarget.setPointerCapture(e.pointerId)
 
         // Calculate relative coordinates in the image space
         const rect = canvasRef.current?.getBoundingClientRect()
@@ -73,7 +74,8 @@ export const ImageCanvas = () => {
         setDrawingBox({ x, y, w, h })
     }
 
-    const handlePointerUp = () => {
+    const handlePointerUp = (e: React.PointerEvent) => {
+        e.currentTarget.releasePointerCapture(e.pointerId)
         if (isDrawing && drawingBox) {
             // Only add if it has some size
             if (drawingBox.w > EDITOR_CONSTANTS.MIN_BOX_SIZE && drawingBox.h > EDITOR_CONSTANTS.MIN_BOX_SIZE) {
@@ -104,7 +106,6 @@ export const ImageCanvas = () => {
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
         >
             {/* Base Image */}
             <div

@@ -7,6 +7,7 @@ import { DetectionReviewDialog } from './DetectionReviewDialog'
 import { InstructionsDialog } from './InstructionsDialog'
 import { ArrowLeft, Download } from 'lucide-react'
 import { useZoomFit, useKeyboardShortcuts } from '@/hooks/use-editor-logic'
+import { trackEvent } from '@/utils/analytics'
 
 export const EditorScreen = () => {
     const reset = useStore(state => state.reset)
@@ -65,6 +66,14 @@ export const EditorScreen = () => {
         link.download = `redacted-${Date.now()}.png`
         link.href = canvas.toDataURL('image/png')
         link.click()
+
+        trackEvent({
+            name: 'download_image',
+            props: {
+                redactions_count: state.boxes.length,
+                file_format: 'png'
+            }
+        });
     }
 
     return (
@@ -81,7 +90,9 @@ export const EditorScreen = () => {
                         Back
                     </Button>
                     <div className="w-px h-4 bg-white/10 mx-2" />
-                    <InstructionsDialog />
+                    <div data-umami-event="open-instructions">
+                        <InstructionsDialog />
+                    </div>
                 </div>
 
                 {/* Center Title for balance */}

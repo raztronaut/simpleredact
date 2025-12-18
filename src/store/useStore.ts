@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { v4 as uuidv4 } from 'uuid'
 import { EDITOR_CONSTANTS } from '@/lib/constants'
+import { trackEvent } from '@/utils/analytics'
 
 export interface Box {
     id: string
@@ -27,7 +28,7 @@ interface RedactState {
     zoom: number
 
     // Actions
-    loadImage: (imageUrl: string, pixelatedUrl: string, width: number, height: number) => void
+    loadImage: (imageUrl: string, pixelatedUrl: string, width: number, height: number, fileDetails?: { type: string, size: number }) => void
     setZoom: (zoom: number | ((prev: number) => number)) => void
 
     addBox: (box: Omit<Box, 'id'>) => void
@@ -61,16 +62,27 @@ export const useStore = create<RedactState>((set, get) => ({
 
     zoom: 1,
 
-    loadImage: (image, pixelatedImage, width, height) => set({
-        image,
-        pixelatedImage,
-        originalWidth: width,
-        originalHeight: height,
-        boxes: [],
-        history: [[]],
-        historyIndex: 0,
-        zoom: 1 // Reset zoom on new image
-    }),
+    loadImage: (image, pixelatedImage, width, height, fileDetails) => {
+        set({
+            image,
+            pixelatedImage,
+            originalWidth: width,
+            originalHeight: height,
+            boxes: [],
+            history: [[]],
+            historyIndex: 0,
+            zoom: 1 // Reset zoom on new image
+        });
+
+        // Track successful upload
+        trackEvent({
+            name: 'upload_success',
+            props: {
+                file_type: fileDetails ? fileDetails.type : (image.startsWith('data:') ? image.split(';')[0].split(':')[1] : 'unknown'),
+                file_size_kb: fileDetails ? Math.round(fileDetails.size / 1024) : 0
+            }
+        });
+    },
 
     setZoom: (zoomer) => set((state) => ({
         zoom: typeof zoomer === 'function' ? zoomer(state.zoom) : zoomer
@@ -90,6 +102,12 @@ export const useStore = create<RedactState>((set, get) => ({
             historyIndex: historyIndex + 1,
             selectedBoxId: newBox.id
         })
+
+        // Track manual redaction
+        trackEvent({
+            name: 'redaction_manual_create',
+            props: { tool: 'pixelate' }
+        });
     },
 
     updateBox: (id, changes) => {
@@ -189,12 +207,16 @@ export const useStore = create<RedactState>((set, get) => ({
         })
     },
 
-    reset: () => set({
-        image: null,
-        pixelatedImage: null,
-        boxes: [],
-        previewBoxes: [], // Clear previews on reset
-        history: [[]],
-        historyIndex: 0
-    })
+    reset: () => {
+        set({
+            image: null,
+            pixelatedImage: null,
+            boxes: [],
+            previewBoxes: [], // Clear previews on reset
+            history: [[]],
+            historyIndex: 0
+        });
+
+        trackEvent({ name: 'canvas_reset' });
+    }
 }))

@@ -11,6 +11,13 @@ export default defineConfig({
       // Allow serving files from one level up to the project root
       allow: ['..'],
     },
+    proxy: {
+      '/stats': {
+        target: 'https://cloud.umami.is',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/stats/, ''),
+      },
+    },
   },
   resolve: {
     alias: {

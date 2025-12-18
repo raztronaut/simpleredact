@@ -37,7 +37,7 @@ export const UploadScreen = () => {
 
             const pixelatedUrl = await generatePixelatedVersion(objectUrl, EDITOR_CONSTANTS.PIXELATION_FACTOR) // Adjust factor as needed
 
-            loadImage(objectUrl, pixelatedUrl, img.width, img.height)
+            loadImage(objectUrl, pixelatedUrl, img.width, img.height, { type: file.type, size: file.size })
         } catch (error) {
             console.error('Failed to process image', error)
         } finally {

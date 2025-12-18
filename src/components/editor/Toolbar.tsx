@@ -10,6 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { AutoDetectButton } from './AutoDetectButton'
+import { trackEvent } from '@/utils/analytics'
 
 export const Toolbar = () => {
     const zoom = useStore(state => state.zoom)
@@ -19,22 +20,22 @@ export const Toolbar = () => {
     const historyIndex = useStore(state => state.historyIndex)
     const history = useStore(state => state.history)
 
-    // We need access to the fit-to-screen logic, which currently lives in EditorScreen.
-    // Better to move the "fit" calculation to a store action if we store container dims, 
-    // or just pass a handler.
-    // However, `useStore` doesn't know about container.
-    // But wait, the Toolbar is inside EditorScreen. 
-    // I can stick to simple zoom actions here, but the "Fit" action requires context.
-    // Let's implement "Fit" by dispatching a custom event that EditorScreen listens to?
-    // Or simpler: The Toolbar just triggers `setZoom('fit')`? 
-    // Type of `setZoom` expects number or function. 
-    // I'll make the store expose a `fitToScreen` handler? No, store doesn't know dims.
-    // I'll dispatch a window event `redact:zoom-fit`.
-
-    const handleFit = () => window.dispatchEvent(new Event('redact:zoom-fit'))
-    const handle100 = () => setZoom(1)
-    const handleZoomIn = () => setZoom(z => Math.min(z + EDITOR_CONSTANTS.ZOOM_STEP, EDITOR_CONSTANTS.MAX_ZOOM))
-    const handleZoomOut = () => setZoom(z => Math.max(z - EDITOR_CONSTANTS.ZOOM_STEP, EDITOR_CONSTANTS.MIN_ZOOM))
+    const handleFit = () => {
+        window.dispatchEvent(new Event('redact:zoom-fit'))
+        trackEvent({ name: 'zoom_change', props: { action: 'fit' } })
+    }
+    const handle100 = () => {
+        setZoom(1)
+        trackEvent({ name: 'zoom_change', props: { action: '100' } })
+    }
+    const handleZoomIn = () => {
+        setZoom(z => Math.min(z + EDITOR_CONSTANTS.ZOOM_STEP, EDITOR_CONSTANTS.MAX_ZOOM))
+        trackEvent({ name: 'zoom_change', props: { action: 'in' } })
+    }
+    const handleZoomOut = () => {
+        setZoom(z => Math.max(z - EDITOR_CONSTANTS.ZOOM_STEP, EDITOR_CONSTANTS.MIN_ZOOM))
+        trackEvent({ name: 'zoom_change', props: { action: 'out' } })
+    }
 
     const canUndo = historyIndex > 0
     const canRedo = historyIndex < history.length - 1
@@ -42,10 +43,10 @@ export const Toolbar = () => {
     return (
         <div className="fixed bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1 md:gap-2 p-1.5 md:p-2 bg-stone-900/90 backdrop-blur-md border border-stone-800 rounded-2xl shadow-2xl z-50 max-w-[95vw] overflow-x-auto">
             <div className="flex items-center gap-0.5 md:gap-1 pr-1 md:pr-2 border-r border-stone-800">
-                <Button variant="ghost" size="icon" onClick={undo} disabled={!canUndo} className="h-9 w-9 md:h-10 md:w-10 rounded-xl hover:bg-stone-800">
+                <Button variant="ghost" size="icon" onClick={undo} disabled={!canUndo} className="h-9 w-9 md:h-10 md:w-10 rounded-xl hover:bg-stone-800" data-umami-event="undo-action">
                     <Undo2 className="w-4 h-4 md:w-5 md:h-5" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={redo} disabled={!canRedo} className="h-9 w-9 md:h-10 md:w-10 rounded-xl hover:bg-stone-800">
+                <Button variant="ghost" size="icon" onClick={redo} disabled={!canRedo} className="h-9 w-9 md:h-10 md:w-10 rounded-xl hover:bg-stone-800" data-umami-event="redo-action">
                     <Redo2 className="w-4 h-4 md:w-5 md:h-5" />
                 </Button>
             </div>

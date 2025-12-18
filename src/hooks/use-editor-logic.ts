@@ -1,6 +1,7 @@
 import { useCallback, useEffect, type RefObject } from 'react';
 import { useStore } from '@/store/useStore';
 import { EDITOR_CONSTANTS } from '@/lib/constants';
+import { trackEvent } from '@/utils/analytics';
 
 export const useZoomFit = (
     containerRef: RefObject<HTMLDivElement | null>,
@@ -80,19 +81,32 @@ export const useKeyboardShortcuts = (fitToScreen: () => void) => {
             }
 
             // Arrow keys for selected box movement
-            if (selectedBoxId && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                e.preventDefault();
-                const box = boxes.find(b => b.id === selectedBoxId);
-                if (box) {
-                    const step = e.shiftKey ? 10 : 1;
-                    let { x, y } = box;
+            if (selectedBoxId) {
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                    const box = boxes.find(b => b.id === selectedBoxId);
+                    if (box) {
+                        const step = e.shiftKey ? 10 : 1;
+                        let { x, y } = box;
 
-                    if (e.key === 'ArrowUp') y -= step;
-                    if (e.key === 'ArrowDown') y += step;
-                    if (e.key === 'ArrowLeft') x -= step;
-                    if (e.key === 'ArrowRight') x += step;
+                        if (e.key === 'ArrowUp') y -= step;
+                        if (e.key === 'ArrowDown') y += step;
+                        if (e.key === 'ArrowLeft') x -= step;
+                        if (e.key === 'ArrowRight') x += step;
 
-                    updateBox(selectedBoxId, { x, y });
+                        updateBox(selectedBoxId, { x, y });
+                    }
+                }
+
+                // Delete selected box
+                if (['Backspace', 'Delete'].includes(e.key)) {
+                    e.preventDefault();
+                    // We need to import deleteBox from store. Since this is a hook, we can just grab it.
+                    useStore.getState().deleteBox(selectedBoxId);
+                    trackEvent({
+                        name: 'redaction_delete',
+                        props: { method: 'keyboard' }
+                    });
                 }
             }
         };

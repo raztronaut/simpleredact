@@ -6,6 +6,7 @@ import type { Box } from '@/store/useStore'
 import { useStore } from '@/store/useStore'
 import type { PIICategory } from '@/lib/aiService'
 import { ScanEye, CheckCircle2 } from 'lucide-react'
+import { trackEvent } from '@/utils/analytics'
 
 // Helper to get nice labels for categories
 const CATEGORY_LABELS: Record<PIICategory, string> = {
@@ -140,10 +141,28 @@ export const DetectionReviewDialog = () => {
     const handleClose = () => {
         clearPreviewBoxes()
         setSelectedCategories({})
+        trackEvent({ name: 'ai_review_cancel' })
     }
 
     const handleConfirm = () => {
         commitPreviewBoxes()
+
+        // Calculate breakdown for analytics
+        const breakdown: Record<string, number> = {}
+        Object.keys(grouped).forEach(cat => {
+            if (selectedCategories[cat]) {
+                breakdown[cat] = grouped[cat].length
+            }
+        })
+
+        trackEvent({
+            name: 'ai_review_confirm',
+            props: {
+                total_accepted: totalSelected,
+                categories: breakdown
+            }
+        })
+
         setSelectedCategories({})
     }
 

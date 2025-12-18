@@ -12,6 +12,8 @@ export function SiteFooter() {
                         rel="noopener noreferrer"
                         aria-label="GitHub"
                         className="rounded-md p-2 transition-colors hover:bg-white/5 hover:text-white"
+                        data-umami-event="footer-link-click"
+                        data-umami-event-type="github"
                     >
                         <Github size={18} />
                     </a>
@@ -21,6 +23,8 @@ export function SiteFooter() {
                         rel="noopener noreferrer"
                         aria-label="X (formerly Twitter)"
                         className="rounded-md p-2 transition-colors hover:bg-white/5 hover:text-white"
+                        data-umami-event="footer-link-click"
+                        data-umami-event-type="twitter"
                     >
                         {/* Twitter icon in Lucide is often just Twitter, but we can use the same size */}
                         <Twitter size={18} />

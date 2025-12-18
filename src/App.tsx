@@ -7,7 +7,7 @@ function App() {
   const image = useStore((state) => state.image)
 
   return (
-    <div className="dark min-h-screen bg-stone-950 text-white font-sans antialiased selection:bg-emerald-500/30">
+    <div className="min-h-screen text-white font-sans selection:bg-emerald-500/30">
       {!image ? <UploadScreen /> : <EditorScreen />}
       <AIWidget />
     </div>

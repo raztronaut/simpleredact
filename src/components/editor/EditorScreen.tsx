@@ -8,6 +8,7 @@ import { InstructionsDialog } from './InstructionsDialog'
 import { ArrowLeft, Download } from 'lucide-react'
 import { useZoomFit, useKeyboardShortcuts } from '@/hooks/use-editor-logic'
 import { trackEvent } from '@/utils/analytics'
+import { UserMenu } from '@/components/auth'
 
 export const EditorScreen = () => {
     const reset = useStore(state => state.reset)
@@ -102,13 +103,16 @@ export const EditorScreen = () => {
                     </span>
                 </div>
 
-                <Button
-                    onClick={handleDownload}
-                    className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold rounded-2xl px-6 h-10 transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] active:scale-95"
-                >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
-                </Button>
+                <div className="flex items-center gap-3">
+                    <Button
+                        onClick={handleDownload}
+                        className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold rounded-2xl px-6 h-10 transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] active:scale-95"
+                    >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download
+                    </Button>
+                    <UserMenu />
+                </div>
             </div>
 
             {/* Canvas Area - No Scroll on Mobile */}

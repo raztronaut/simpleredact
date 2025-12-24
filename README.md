@@ -67,6 +67,28 @@ A simple, secure, and privacy-focused image redaction tool. Featuring local, bro
     npm run build
     ```
 
+## Database (Production)
+
+This project uses **SQLite**. For production, we recommend **Turso** (LibSQL) for a serverless, compatible experience.
+
+1.  **Create Database**:
+    ```bash
+    turso db create simpleredact
+    turso db show simpleredact --url
+    turso db tokens create simpleredact
+    ```
+
+2.  **Environment Variables**:
+    Add these to your production environment (e.g., Vercel):
+    - `TURSO_DATABASE_URL`: The URL from `turso db show` (starts with `libsql://`)
+    - `TURSO_AUTH_TOKEN`: The token created above
+
+3.  **Push Schema**:
+    Run this locally to push your schema to the remote database:
+    ```bash
+    TURSO_DATABASE_URL=... TURSO_AUTH_TOKEN=... yarn db:push
+    ```
+
 ## Project Structure
 
 -   `src/components`: UI components (Editor, Upload, etc.)
@@ -74,6 +96,36 @@ A simple, secure, and privacy-focused image redaction tool. Featuring local, bro
 -   `src/hooks`: Custom hooks (Editor logic)
 -   `src/lib`: Constants and utilities
 -   `src/utils`: Image processing logic
+
+## Auth Server (Optional)
+
+SimpleRedact includes optional authentication for saving presets.
+
+### Quick Start
+
+```bash
+# Run both frontend and auth server
+yarn dev:all
+```
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+| Variable | Description |
+|----------|-------------|
+| `AUTH_PORT` | Auth server port (default: 3000) |
+| `VITE_AUTH_URL` | Frontend: auth server URL |
+| `PRODUCTION_URL` | Your production domain for CORS |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth secret |
+
+### Deployment
+
+1. Deploy auth server separately or as serverless function
+2. Set `PRODUCTION_URL` to your frontend domain
+3. Set `VITE_AUTH_URL` to your auth server URL
+4. Add Google OAuth redirect URI: `https://your-api/api/auth/callback/google`
 
 ## License
 

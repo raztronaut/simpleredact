@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 .vercel
 .env
+
+# Database
+sqlite.db
+drizzle/

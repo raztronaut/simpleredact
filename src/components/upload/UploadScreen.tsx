@@ -15,6 +15,7 @@ import { EDITOR_CONSTANTS } from '@/lib/constants'
 import { FeaturesSection } from '@/components/ui/feature'
 import { Hero } from './Hero'
 import { SiteFooter } from './SiteFooter'
+import { UserMenu } from '@/components/auth'
 
 export const UploadScreen = () => {
     const loadImage = useStore((state) => state.loadImage)
@@ -94,6 +95,11 @@ export const UploadScreen = () => {
 
     return (
         <div className="min-h-screen bg-stone-950 flex flex-col items-center p-4 relative overflow-x-hidden">
+            {/* User Menu - Fixed Top Right */}
+            <div className="absolute top-4 right-4 z-50">
+                <UserMenu />
+            </div>
+
             <div className="w-full max-w-6xl mx-auto flex flex-col items-center pt-0 gap-0">
 
                 <Hero />

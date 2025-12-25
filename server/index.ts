@@ -41,9 +41,12 @@ app.get("/health", (c) => c.json({ status: "ok" }));
 
 const port = Number(process.env.AUTH_PORT) || 3000;
 
-console.log(`🔐 Auth server running on http://localhost:${port}`);
+if (process.env.NODE_ENV !== "production") {
+    console.log(`🔐 Auth server running on http://localhost:${port}`);
+    serve({
+        fetch: app.fetch,
+        port,
+    });
+}
 
-serve({
-    fetch: app.fetch,
-    port,
-});
+export default app;

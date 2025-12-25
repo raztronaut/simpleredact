@@ -7,6 +7,13 @@ import "dotenv/config";
 
 const app = new Hono();
 
+// Error handler for better debugging in Vercel logs
+app.onError((err, c) => {
+    console.error(`❌ Server Error: ${err.message}`);
+    console.error(err.stack);
+    return c.json({ error: "Internal Server Error", message: err.message }, 500);
+});
+
 // Build allowed origins for CORS
 const getAllowedOrigins = (): string[] => {
     const origins = ["http://localhost:5173"];
